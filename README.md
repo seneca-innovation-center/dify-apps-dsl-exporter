@@ -441,15 +441,18 @@ and `KROKI_TIMEOUT` (seconds; a slow render falls back to a Mermaid code block).
 - Uses the same `CONFLUENCE_BASE_URL` / `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN` credentials
   as the tracker sync.
 
-### Scheduled runs (GitHub Actions)
+### Scheduled runs
 
-`.github/workflows/sync-tracker.yml` runs the sync **weekly (Mondays 08:00 UTC)** and
-exposes a manual **Run workflow** button (with `dry_run` / `no_slack` toggles). After adding
-the secrets above, no further setup is required.
+Run the sync on a schedule from a machine that can reach your Dify host, for example
+with `cron`:
 
-> If your Dify host is only reachable on a private network, GitHub-hosted runners will not
-> reach it. In that case run `./run.sh sync` from a machine on that network via `cron`
-> (e.g. `0 8 * * 1 /path/to/dify-console/run.sh sync`) or a self-hosted runner.
+```bash
+0 8 * * 1 /path/to/dify-console/run.sh sync
+```
+
+The repository doesn't ship a scheduled workflow: the sync needs your Dify and Confluence
+credentials, so run it from your own infrastructure (or a private repository) rather
+than from this public one.
 
 ## Troubleshooting
 
@@ -507,8 +510,6 @@ dify-console/
 │   ├── slack_notify.py  # Slack incoming-webhook status message
 │   ├── sync_tracker.py  # Weekly Confluence sync + Slack notification
 │   └── prune_deleted.py # Delete tracker "Delete"-marked workflows + notify
-├── .github/workflows/
-│   └── sync-tracker.yml # Scheduled (weekly) + manual tracker sync
 ├── run.sh               # Convenience runner (export|import|delete|sync)
 ├── dsl/                 # Exported workflow files (created after export by default)
 ├── .env                 # Your credentials (create from .env.example)
